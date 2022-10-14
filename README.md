@@ -6,6 +6,6 @@
 
 [Joaquim Tiago Martins Roque PG50502](https://github.com/jtmr05)
 
-[Vasco Oliveira Matos PG50796](https://github.com/vasco1m)
-
 [Pedro Aquino Martins de Araujo PG50684](https://github.com/pedroarauj09)
+
+[Vasco Oliveira Matos PG50796](https://github.com/vasco1m)
