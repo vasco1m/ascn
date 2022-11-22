@@ -19,6 +19,7 @@ all:
   ghost_ip: <GHOST_SERVICE_IP>     # Needs to be updated
   ghost_port: <GHOST_PORT>         # Needs to be updated
 
+  ghost_dir: /var/www/ascn
 
   # Additional variables
   # ...
