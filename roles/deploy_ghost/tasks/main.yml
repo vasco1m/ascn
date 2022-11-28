@@ -1,4 +1,9 @@
 
+- name: Set up Ghost user, give it super user perms and login as said user
+  become: true
+  shell:
+    cmd: adduser "{{ ghost_user }}" && usermod -aG sudo "{{ ghost_user }}" && su - "{{ ghost_user }}" 
+
 - name: Install nginx
   become: true
   apt:
@@ -23,11 +28,10 @@
   shell:
     cmd: npm install ghost-cli@1.23.0 -g
 
-# TODO: fix chown
 - name: Create directory and set the owner
   become: true
   shell:
-    cmd: mkdir -p "{{ ghost_dir }}" && chown <user>:<user> "{{ ghost_dir }}" && chmod 775 "{{ ghost_dir }}"
+    cmd: mkdir -p "{{ ghost_dir }}" && chown "{{ ghost_user }}":"{{ ghost_user }}" "{{ ghost_dir }}" && chmod 775 "{{ ghost_dir }}"
 
 - name: Install Ghost
   shell:
