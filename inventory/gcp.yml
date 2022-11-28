@@ -19,8 +19,10 @@ all:
   ghost_ip: <GHOST_SERVICE_IP>     # Needs to be updated
   ghost_port: <GHOST_PORT>         # Needs to be updated
 
+  # Ghost installation step variables
   ghost_dir: /var/www/ascn
   ghost_user: ghost_user
+  ghost_version: 5.14.1
 
   # Additional variables
   # ...

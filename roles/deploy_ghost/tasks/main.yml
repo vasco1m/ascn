@@ -28,15 +28,15 @@
   shell:
     cmd: npm install ghost-cli@1.23.0 -g
 
-- name: Create directory and set the owner
+- name: Create directory, and set the owner and permissions
   become: true
   shell:
     cmd: mkdir -p "{{ ghost_dir }}" && chown "{{ ghost_user }}":"{{ ghost_user }}" "{{ ghost_dir }}" && chmod 775 "{{ ghost_dir }}"
 
+# TODO:
+# Set all the install flags as documented in https://ghost.org/docs/ghost-cli
 - name: Install Ghost
   shell:
-    chdir: /var/www/ascn
-    cmd: ghost install
-  environment:
-    GHOST_VERSION: 5.14.1
+    chdir: "{{ ghost_dir }}" 
+    cmd: ghost install "{{ ghost_version }}" # ...
 
