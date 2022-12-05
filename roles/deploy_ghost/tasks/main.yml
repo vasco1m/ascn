@@ -33,10 +33,14 @@
   shell:
     cmd: mkdir -p "{{ ghost_dir }}" && chown "{{ ghost_user }}":"{{ ghost_user }}" "{{ ghost_dir }}" && chmod 775 "{{ ghost_dir }}"
 
-# TODO:
-# Set all the install flags as documented in https://ghost.org/docs/ghost-cli
 - name: Install Ghost
   shell:
     chdir: "{{ ghost_dir }}" 
-    cmd: ghost install "{{ ghost_version }}" # ...
+    cmd: ghost install --url "{{ ghost_url }}" --port "{{ ghost_port }}" --ip "{{ ghost_ip }}" --dbhost "{{ ghost_db_host }}" --dbuser "{{ ghost_db_user }}" --dbpass "{{ ghost_db_pw }}" --dbname "{ ghost_db_name }}" --no-stetup-nginx --no-stetup-ssl --no-stetup-systemd --no-prompt
+
+
+- name: Start Ghost
+  shell:
+    chdir: "{{ ghost_dir }}"
+    cmd: ghost start --dir .
 

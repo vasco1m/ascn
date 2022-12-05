@@ -24,5 +24,13 @@ all:
   ghost_user: ghost_user
   ghost_version: 5.14.1
 
+  ghost_url: http://ghost.ascn.com
+  ghost_port: 2368
+  ghost_ip: localhost
+  ghost_db_host: localhost
+  ghost_db_user: ghost_mysql
+  ghost_db_pw: 1234
+  ghost_db_name: ghost_db
+
   # Additional variables
   # ...
