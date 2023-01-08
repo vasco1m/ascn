@@ -1,46 +1,64 @@
+# Deployment for Ghost
+- name: Deploy Ghost
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ ghost_namespace }}"
+    kind: Deployment
+    definition:
+      apiVersion: apps/v1
+      metadata:
+        name: ghost-deployment
+        labels:
+          app: ghost
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: ghost
+        template:
+          metadata:
+            labels:
+              app: ghost
+          spec:
+            containers:
+            - name: ghost
+              image: ghost:5.14.1
+              env: # The variables below could be set on a ConfigMap object
+              - name: database__client
+                value: mysql
+              - name: database__connection__host
+                value: mysql-service
+              - name: database__connection__user
+                value: ghost_user
+              - name: database__connection_port
+                value: "3306"
+              - name: database__connection__password
+                value: \$2b\$10\$IT1m1RdpubBI/umopBHHguN.DSaA0pMYGxNDVfyw/NGf/9YuF6vw2
+              - name: database__connection__database
+                value: ghost
+                  #- name: url
+                  #  value: http://grupo12ascn:8080
 
-- name: Set up Ghost user, give it super user perms and login as said user
-  become: true
-  shell:
-    cmd: adduser "{{ ghost_user }}" && usermod -aG sudo "{{ ghost_user }}" && su - "{{ ghost_user }}" 
-
-- name: Install nginx
-  become: true
-  apt:
-    name: nginx
-
-- name: Download NodeJS 16 setup script
-  shell:
-    cmd: curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-
-- name: Install NodeJS 16
-  become: true
-  apt:
-    name: nodejs
-
-- name: Install MySQL Server
-  become: true
-  apt:
-    name: mysql-server
-
-- name: Install Ghost-CLI
-  become: true
-  shell:
-    cmd: npm install ghost-cli@1.23.0 -g
-
-- name: Create directory, and set the owner and permissions
-  become: true
-  shell:
-    cmd: mkdir -p "{{ ghost_dir }}" && chown "{{ ghost_user }}":"{{ ghost_user }}" "{{ ghost_dir }}" && chmod 775 "{{ ghost_dir }}"
-
-- name: Install Ghost
-  shell:
-    chdir: "{{ ghost_dir }}" 
-    cmd: ghost install --url "{{ ghost_url }}" --port "{{ ghost_port }}" --ip "{{ ghost_ip }}" --dbhost "{{ ghost_db_host }}" --dbuser "{{ ghost_db_user }}" --dbpass "{{ ghost_db_pw }}" --dbname "{ ghost_db_name }}" --no-stetup-nginx --no-stetup-ssl --no-stetup-systemd --no-prompt
+                  #ports:
+                  #- containerPort: 3306
 
 
-- name: Start Ghost
-  shell:
-    chdir: "{{ ghost_dir }}"
-    cmd: ghost start --dir .
-
+# Service for exposing Ghost
+- name: Expose Ghost
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ ghost_namespace }}"
+    kind: Service
+    definition:
+      apiVersion: v1
+      metadata:
+        name: ghost-service # logical name of the service, which will also become the DNS name of the service when it is created.
+        labels:
+          app: ghost
+      spec:
+        type: NodePort
+        selector:
+          app: ghost
+        ports:
+          - targetPort: 8080 # port that containers are listening on
+            port: 2368 # port number exposed internally in the cluster

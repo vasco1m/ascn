@@ -1,0 +1,93 @@
+# Deployment for MySQL
+- name: Deploy MySQL
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ ghost_namespace }}"
+    kind: Deployment
+    definition:
+      apiVersion: apps/v1
+      metadata:
+        name: mysql-deployment
+        labels:
+          app: mysql
+          tier: database
+      spec:
+        selector:
+          matchLabels:
+            app: mysql
+        strategy:
+          type: Recreate
+        template:
+          metadata:
+            labels:
+              app: mysql
+              tier: database
+          spec:
+            containers:
+            - name: mysql
+              image: mysql:latest
+              env: # The variables below could be set on a ConfigMap object
+                #- name: MYSQL_ALLOW_EMPTY_PASSWORD
+                #  value: "true"
+              - name: MYSQL_DATABASE
+                value: ghost
+              - name: MYSQL_USER
+                value: ghost_user
+              - name: MYSQL_PASSWORD
+                value: \$2b\$10\$IT1m1RdpubBI/umopBHHguN.DSaA0pMYGxNDVfyw/NGf/9YuF6vw2 # Use Secret object in real usage
+              ports:
+              - containerPort: 3306
+              volumeMounts:
+              - name: mysql-persistent-storage
+                mountPath: /var/lib/mysql
+            volumes:
+            - name: mysql-persistent-storage
+              persistentVolumeClaim:
+                claimName: mysql-pv-claim
+
+
+# Persistent Volume Claim for MySQL pod
+- name: Claim a PV
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ ghost_namespace }}"
+    kind: PersistentVolumeClaim
+    definition:
+      apiVersion: v1
+      metadata:
+        name: mysql-pv-claim
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 50Gi
+
+
+# Wait for PVC to be bound
+- name: Wait for PVC to be Bound
+  shell:
+    cmd: perl -e 'while(`kubectl get pvc mysql-pv-claim --namespace=ghost-deployment-namespace` !~ m/Bound/){ sleep 5; print STDERR "Waiting for PVC to be Bound...\n" }'
+
+
+# Service for exposing MySQL
+- name: Expose MySQL
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ ghost_namespace }}"
+    kind: Service
+    definition:
+      apiVersion: v1
+      metadata:
+        name: mysql-service # logical name of the service, which will also become the DNS name of the service when it is created.
+        labels:
+          app: mysql
+          tier: database
+      spec:
+        type: ClusterIP
+        selector:
+          app: mysql
+        ports:
+          - targetPort: 3306 # port that containers are listening on
+            port: 3306 # port number exposed internally in the cluster

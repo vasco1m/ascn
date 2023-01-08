@@ -15,14 +15,13 @@ all:
   gcp_initial_node_count: 2            # Number of nodes to create. Can be changed if necessary
 
 
-  # APP variables
-  ghost_ip: <GHOST_SERVICE_IP>     # Needs to be updated
-  ghost_port: <GHOST_PORT>         # Needs to be updated
-
   # Ghost installation step variables
-  ghost_dir: /var/www/ascn
-  ghost_user: ghost_user
-  ghost_version: 5.14.1
+  #ghost_dir: /var/www/ascn
+  #ghost_user: ghost_user
+  #ghost_version: 5.14.1
+
+  ghost_namespace: ghost-deployment-namespace
+
 
   ghost_url: http://ghost.ascn.com
   ghost_port: 2368
@@ -31,6 +30,3 @@ all:
   ghost_db_user: ghost_mysql
   ghost_db_pw: 1234
   ghost_db_name: ghost_db
-
-  # Additional variables
-  # ...

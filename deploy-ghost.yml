@@ -6,4 +6,6 @@
   hosts: localhost
   gather_facts: false
   roles:
+      - create_namespace
+      - deploy_mysql
       - deploy_ghost
