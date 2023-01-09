@@ -27,20 +27,20 @@
               - name: database__client
                 value: mysql
               - name: database__connection__host
-                value: mysql-service
+                value: "{{ ghost_db_host }}"
               - name: database__connection__user
-                value: ghost_user
+                value: "{{ ghost_db_user }}"
               - name: database__connection_port
                 value: "3306"
-              - name: database__connection__password
-                value: \$2b\$10\$IT1m1RdpubBI/umopBHHguN.DSaA0pMYGxNDVfyw/NGf/9YuF6vw2
               - name: database__connection__database
-                value: ghost
-                  #- name: url
-                  #  value: http://grupo12ascn:8080
-
-                  #ports:
-                  #- containerPort: 3306
+                value: "{{ ghost_db_name }}"
+              - name: database__connection__password
+                value: my_epic_password
+                #value: \$2b\$10\$IT1m1RdpubBI/umopBHHguN.DSaA0pMYGxNDVfyw/NGf/9YuF6vw2
+                #- name: url
+                #  value: http://grupo12ascn:2368
+              ports:
+              - containerPort: "{{ ghost_port }}"
 
 
 # Service for exposing Ghost
@@ -56,9 +56,15 @@
         labels:
           app: ghost
       spec:
-        type: NodePort
+        type: LoadBalancer
         selector:
           app: ghost
         ports:
-          - targetPort: 8080 # port that containers are listening on
+          - name: http
+            targetPort: "{{ ghost_port }}" # port that containers are listening on
             port: 2368 # port number exposed internally in the cluster
+      status:
+        loadBalancer:
+          ingress:
+          - ip: "{{ ghost_ip }}"
+

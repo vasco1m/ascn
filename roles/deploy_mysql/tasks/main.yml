@@ -27,14 +27,16 @@
             - name: mysql
               image: mysql:latest
               env: # The variables below could be set on a ConfigMap object
-                #- name: MYSQL_ALLOW_EMPTY_PASSWORD
-                #  value: "true"
+              - name: MYSQL_ALLOW_EMPTY_PASSWORD
+                value: "true"
               - name: MYSQL_DATABASE
-                value: ghost
+                value: "{{ ghost_db_name }}"
               - name: MYSQL_USER
-                value: ghost_user
+                value: "{{ ghost_db_user }}"
               - name: MYSQL_PASSWORD
-                value: \$2b\$10\$IT1m1RdpubBI/umopBHHguN.DSaA0pMYGxNDVfyw/NGf/9YuF6vw2 # Use Secret object in real usage
+                value: my_epic_password
+                #value: \$2b\$10\$IT1m1RdpubBI/umopBHHguN.DSaA0pMYGxNDVfyw/NGf/9YuF6vw2 # Use Secret object in real usage
+
               ports:
               - containerPort: 3306
               volumeMounts:
@@ -65,10 +67,10 @@
             storage: 50Gi
 
 
-# Wait for PVC to be bound
+# Wait for PVC to be bound (5 tries limit at 5 second interval)
 - name: Wait for PVC to be Bound
   shell:
-    cmd: perl -e 'while(`kubectl get pvc mysql-pv-claim --namespace=ghost-deployment-namespace` !~ m/Bound/){ sleep 5; print STDERR "Waiting for PVC to be Bound...\n" }'
+    cmd: perl -e 'my $count = 0; while(`kubectl get pvc mysql-pv-claim --namespace=ghost-namespace` !~ m/Bound/){ if($count++ == 5){ last; } sleep 5; } exit ($count == 5);'
 
 
 # Service for exposing MySQL
@@ -80,7 +82,7 @@
     definition:
       apiVersion: v1
       metadata:
-        name: mysql-service # logical name of the service, which will also become the DNS name of the service when it is created.
+        name: "{{ ghost_db_host }}" # logical name of the service, which will also become the DNS name of the service when it is created.
         labels:
           app: mysql
           tier: database

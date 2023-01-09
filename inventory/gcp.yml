@@ -15,18 +15,14 @@ all:
   gcp_initial_node_count: 2            # Number of nodes to create. Can be changed if necessary
 
 
-  # Ghost installation step variables
-  #ghost_dir: /var/www/ascn
-  #ghost_user: ghost_user
-  #ghost_version: 5.14.1
-
-  ghost_namespace: ghost-deployment-namespace
+  ghost_namespace: ghost-namespace
 
 
   ghost_url: http://ghost.ascn.com
   ghost_port: 2368
-  ghost_ip: localhost
-  ghost_db_host: localhost
+  ghost_ip: 35.124.11.56
+
+  ghost_db_host: mysql-service
   ghost_db_user: ghost_mysql
-  ghost_db_pw: 1234
   ghost_db_name: ghost_db
+  ghost_db_pw: 1234
