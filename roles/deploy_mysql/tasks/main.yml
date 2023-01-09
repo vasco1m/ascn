@@ -26,15 +26,16 @@
             - name: mysql
               image: mysql:latest
               env: # The variables below could be set on a ConfigMap object
-              - name: MYSQL_ALLOW_EMPTY_PASSWORD
-                value: "true"
+              - name: MYSQL_ROOT_PASSWORD
+                value: my_super_epic_password
+                  #- name: MYSQL_ALLOW_EMPTY_PASSWORD
+                  #  value: "true"
               - name: MYSQL_DATABASE
                 value: "{{ ghost_db_name }}"
               - name: MYSQL_USER
                 value: "{{ ghost_db_user }}"
               - name: MYSQL_PASSWORD
                 value: my_epic_password
-                #value: \$2b\$10\$IT1m1RdpubBI/umopBHHguN.DSaA0pMYGxNDVfyw/NGf/9YuF6vw2 # Use Secret object in real usage
 
               ports:
               - containerPort: 3306

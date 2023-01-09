@@ -35,15 +35,11 @@
                 value: "{{ ghost_db_name }}"
               - name: database__connection__password
                 value: my_epic_password
-                #value: \$2b\$10\$IT1m1RdpubBI/umopBHHguN.DSaA0pMYGxNDVfyw/NGf/9YuF6vw2
               - name: url
-                value: http://{{ ghost_ip ~ ':' ~ ghost_port }}
-                #- name: server__host
-                #  value: "{{ ghost_ip }}"
-                #- name: server__port
-                #  value: "{{ '' ~ ghost_port }}"
+                value: http://{{ ghost_ip }}:{{ ghost_port }}
+
               ports:
-              - containerPort: "{{ ghost_port }}"
+              - containerPort: 2368
 
 
 # Service for exposing Ghost
@@ -64,7 +60,5 @@
           app: ghost
         ports:
           - name: http
-            targetPort: "{{ ghost_port }}" # port that containers are listening on
-            port: 2368 # port number exposed internally in the cluster
-              #externalIps:
-              #  - "{{ ghost_ip }}"
+            targetPort: 2368 # port that containers are listening on
+            port: "{{ ghost_port }}" # port number exposed internally in the cluster
