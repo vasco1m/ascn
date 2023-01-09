@@ -17,12 +17,9 @@ all:
 
   ghost_namespace: ghost-namespace
 
-
-  ghost_url: http://ghost.ascn.com
-  ghost_port: 2368
-  ghost_ip: 35.124.11.56
+  ghost_port: 80
+  ghost_ip: 35.124.11.56 #TODO needs to be fixed!!!
 
   ghost_db_host: mysql-service
   ghost_db_user: ghost_mysql
   ghost_db_name: ghost_db
-  ghost_db_pw: 1234

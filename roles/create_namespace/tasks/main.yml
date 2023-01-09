@@ -4,37 +4,3 @@
     state: present
     api_version: v1
     kind: Namespace
-
-
-      #- name: Create first PV
-      #  kubernetes.core.k8s:
-      #    state: present
-      #    kind: PersistentVolume
-      #    definition:
-      #      apiVersion: v1
-      #      metadata:
-      #        name: pv001
-      #      spec:
-      #        capacity:
-      #          storage: 100Gi
-      #        accessModes:
-      #          - ReadWriteOnce
-      #        persistentVolumeReclaimPolicy: Retain
-      #        storageClassName: ""
-      #
-      #
-      #- name: Create second PV
-      #  kubernetes.core.k8s:
-      #    state: present
-      #    kind: PersistentVolume
-      #    definition:
-      #      apiVersion: v1
-      #      metadata:
-      #        name: pv002
-      #      spec:
-      #        capacity:
-      #          storage: 100Gi
-      #        accessModes:
-      #          - ReadWriteOnce
-      #        persistentVolumeReclaimPolicy: Retain
-      #        storageClassName: local-storage

@@ -1,6 +1,5 @@
 ---
 # Playbook to deploy Ghost and its components
-# TO DO
 
 - name: Deploy ghost
   hosts: localhost

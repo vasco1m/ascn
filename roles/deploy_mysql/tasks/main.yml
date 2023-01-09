@@ -1,4 +1,3 @@
-# Deployment for MySQL
 - name: Deploy MySQL
   kubernetes.core.k8s:
     state: present
@@ -70,7 +69,7 @@
 # Wait for PVC to be bound (5 tries limit at 5 second interval)
 - name: Wait for PVC to be Bound
   shell:
-    cmd: perl -e 'my $count = 0; while(`kubectl get pvc mysql-pv-claim --namespace=ghost-namespace` !~ m/Bound/){ if($count++ == 5){ last; } sleep 5; } exit ($count == 5);'
+    cmd: perl scripts/wait_pvc.pl "{{ ghost_namespace }}"
 
 
 # Service for exposing MySQL

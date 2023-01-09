@@ -1,4 +1,4 @@
-- name: Delete Ghost service
+- name: Delete MySQL service
   kubernetes.core.k8s:
     state: absent
     namespace: "{{ ghost_namespace }}"
@@ -6,12 +6,13 @@
     definition:
       apiVersion: v1
       metadata:
-        name: ghost-service 
+        name: "{{ ghost_db_host }}" # logical name of the service, which will also become the DNS name of the service when it is created.
         labels:
-          app: ghost
+          app: mysql
+          tier: database
 
 
-- name: Undeploy Ghost
+- name: Undeploy MySQL
   kubernetes.core.k8s:
     state: absent
     namespace: "{{ ghost_namespace }}"
@@ -19,6 +20,7 @@
     definition:
       apiVersion: apps/v1
       metadata:
-        name: ghost-deployment
+        name: mysql-deployment
         labels:
-          app: ghost
+          app: mysql
+          tier: database

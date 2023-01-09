@@ -1,4 +1,3 @@
-# Deployment for Ghost
 - name: Deploy Ghost
   kubernetes.core.k8s:
     state: present
@@ -23,7 +22,7 @@
             containers:
             - name: ghost
               image: ghost:5.14.1
-              env: # The variables below could be set on a ConfigMap object
+              env:
               - name: database__client
                 value: mysql
               - name: database__connection__host
@@ -37,8 +36,12 @@
               - name: database__connection__password
                 value: my_epic_password
                 #value: \$2b\$10\$IT1m1RdpubBI/umopBHHguN.DSaA0pMYGxNDVfyw/NGf/9YuF6vw2
-                #- name: url
-                #  value: http://grupo12ascn:2368
+              - name: url
+                value: http://{{ ghost_ip ~ ':' ~ ghost_port }}
+                #- name: server__host
+                #  value: "{{ ghost_ip }}"
+                #- name: server__port
+                #  value: "{{ '' ~ ghost_port }}"
               ports:
               - containerPort: "{{ ghost_port }}"
 
@@ -52,7 +55,7 @@
     definition:
       apiVersion: v1
       metadata:
-        name: ghost-service # logical name of the service, which will also become the DNS name of the service when it is created.
+        name: ghost-service 
         labels:
           app: ghost
       spec:
@@ -63,8 +66,5 @@
           - name: http
             targetPort: "{{ ghost_port }}" # port that containers are listening on
             port: 2368 # port number exposed internally in the cluster
-      status:
-        loadBalancer:
-          ingress:
-          - ip: "{{ ghost_ip }}"
-
+              #externalIps:
+              #  - "{{ ghost_ip }}"
