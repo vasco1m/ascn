@@ -6,5 +6,7 @@
   gather_facts: false
   roles:
       - undeploy_ghost
-      - undeploy_mysql
-      - delete_namespace
+      - role: undeploy_mysql
+        when: delete_data is defined and delete_data == "true"
+      - role: delete_namespace
+        when: delete_data is defined and delete_data == "true"

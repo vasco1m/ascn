@@ -3,6 +3,7 @@
     state: present
     namespace: "{{ ghost_namespace }}"
     kind: Deployment
+    wait: true
     definition:
       apiVersion: apps/v1
       metadata:
@@ -34,7 +35,7 @@
               - name: database__connection__database
                 value: "{{ ghost_db_name }}"
               - name: database__connection__password
-                value: my_epic_password
+                value: "{{ ghost_db_pw }}"
               - name: url
                 value: http://{{ ghost_ip }}:{{ ghost_port }}
 
@@ -48,6 +49,7 @@
     state: present
     namespace: "{{ ghost_namespace }}"
     kind: Service
+    wait: true
     definition:
       apiVersion: v1
       metadata:
@@ -62,3 +64,20 @@
           - name: http
             targetPort: 2368 # port that containers are listening on
             port: "{{ ghost_port }}" # port number exposed internally in the cluster
+
+
+- name: Hash password
+  shell:
+    cmd: python3 scripts/digest.py "{{ blog_admin_pw }}"
+  register: hashed_pw
+
+- name: Get mysql pod name
+  shell:
+    cmd: kubectl get pod -n "{{ ghost_namespace }}" | perl -e 'while(<STDIN>){ if(m/mysql/){ print((split " ")[0]); last; }}'
+  register: mysql_pod
+
+- name: Add Blog user to the DB
+  kubernetes.core.k8s_exec:
+    namespace: "{{ ghost_namespace }}"
+    pod: "{{ mysql_pod.stdout }}"
+    command: mysql -h "{{ ghost_db_host }}" -u "{{ ghost_db_user }}" -p"{{ ghost_db_pw }}" -D "{{ ghost_db_name }}" -e 'UPDATE users set name="{{ blog_admin_name }}", password="{{hashed_pw.stdout}}", email="{{ blog_admin_email }}", status="active" WHERE id=1;'
