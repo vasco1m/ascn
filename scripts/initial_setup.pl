@@ -14,10 +14,6 @@ use constant PACKAGES => [
     'google-cloud-sdk-gke-gcloud-auth-plugin'
 ];
 
-use constant CLUSTER => 'ascn-cluster';
-
-use constant ZONE => 'us-central1-a';
-
 
 # perform system update and install needed packages
 system 'sudo apt update';
@@ -39,7 +35,3 @@ system 'ansible-galaxy collection install kubernetes.core';
 
 # install python bcrypt module
 system 'pip install bcrypt';
-
-
-# fetch cluster endpoint
-system 'gcloud container clusters get-credentials ' . CLUSTER . ' --zone "' . ZONE . '"';
